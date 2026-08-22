@@ -9392,7 +9392,6 @@ function launch(variantKey) {
   G           = 4;
   BAY_ROW_SIZE = v.doubleRow ? 12 : v.bay;
   STORAGE_KEY  = v.storageKey;
-  try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
 
   bayGrid   = new Array(BAY_SLOTS).fill(null);
   pairs     = new Map();
