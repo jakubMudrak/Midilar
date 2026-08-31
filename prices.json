@@ -1,0 +1,46 @@
+{
+  "_readme": [
+    "Prices for the system configurator. Edit this file only - no HTML or JS changes needed.",
+    "The numbers below are PLACEHOLDERS. Replace them with real prices, then set",
+    "\"enabled\": true to show prices on the site. While enabled is false the site shows",
+    "no prices at all, but the quote list and the request form still work.",
+    "'bases' is the price of the empty chassis for each size. 'modules' is the price per",
+    "module, counted once per module regardless of how many slots it occupies.",
+    "Keys in 'modules' must match the module names used by the configurator exactly."
+  ],
+  "_status": "PLACEHOLDER PRICES - replace before setting enabled to true",
+  "enabled": false,
+  "currency": "EUR",
+  "symbol": "€",
+  "note": "Prices exclude VAT and shipping.",
+  "bases": {
+    "S": 390,
+    "M": 590,
+    "L": 890
+  },
+  "modules": {
+    "VCO": 45,
+    "LFO": 45,
+    "FM-OP": 75,
+    "SLEW": 40,
+    "VCF": 45,
+    "ENVELOPE": 70,
+    "ADDR-SEQ": 110,
+    "DELAY": 75,
+    "MIXER": 45,
+    "PLANK": 20,
+    "1:3": 20,
+    "2:2": 20,
+    "3:1": 20,
+    "S&H": 25,
+    "4": 30,
+    "8": 50,
+    "12": 70,
+    "TEXT. SYNTH": 120,
+    "BLANK": 15,
+    "BURST": 75,
+    "CV MIX": 45,
+    "WT VCO": 50,
+    "CLOCK": 45
+  }
+}
