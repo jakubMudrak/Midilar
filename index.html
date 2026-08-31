@@ -1161,6 +1161,12 @@ html {
   gap: 2px;
 }
 
+#place-warn.hint {
+  color: var(--gold) !important;
+  border-color: var(--gold-dim) !important;
+  background: var(--gold-dark) !important;
+}
+
 /* ══════════════════════════════════════
    QUOTE — sidebar summary + quote page
 ══════════════════════════════════════ */
@@ -9445,7 +9451,10 @@ function closeLightbox() {
   document.body.style.overflow = '';
 }
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeLightbox();
+  if (e.key !== 'Escape') return;
+  if (document.getElementById('lightbox').classList.contains('active')) { closeLightbox(); return; }
+  if (typeof pending !== 'undefined' && pending) { cancelPending(); return; }
+  if (typeof selected !== 'undefined' && selected) { selected = null; buildPalette(); hidePlaceWarn(); }
 });
 
 // ╔══════════════════════════════════════════════════════════════════╗
@@ -9567,7 +9576,7 @@ function launch(variantKey) {
   buildPalette();
   render(false);
   updateDeckSubtotal();
-  const pw = document.getElementById('place-warn'); if(pw) pw.style.display='none';
+  hidePlaceWarn();
 
   document.getElementById('landing').style.display = 'none';
   document.getElementById('landing-page').style.display = 'none';
@@ -9693,6 +9702,26 @@ function dropOnSlot(from, toSlot, toGrid, rowEnd) {
   placeWithId(toGrid, toSlot, fromMod.name, size, fromMod.id);
   drag = null; render();
 }
+// Is there room for `size` cells starting at `start`, without crossing `limit`?
+// Assumes anything being moved has already been lifted out of the grid.
+function fitsAt(grid, start, size, limit) {
+  if (start < 0 || start + size > limit) return false;
+  for (let k = 0; k < size; k++) if (grid[start + k]) return false;
+  return true;
+}
+
+function restoreGrid(grid, snapshot) {
+  for (let i = 0; i < grid.length; i++) grid[i] = snapshot[i];
+}
+
+// End of the row that `index` sits in. The L bay is one flat 24-cell array
+// rendered as two 12-cell rows, so a module must not span the gap.
+function rowLimitFor(isBay, index) {
+  if (!isBay) return PATCH_SLOTS;
+  if (!VARIANTS[CURRENT_VARIANT].doubleRow) return BAY_SLOTS;
+  return Math.floor(index / BAY_ROW_SIZE) * BAY_ROW_SIZE + BAY_ROW_SIZE;
+}
+
 function dropOnModule(from, toId, toGrid, rowEnd) {
   const fromMod = getModAt(from.grid, from.slotIndex);
   const toSlot = findHead(toGrid, toId);
@@ -9701,11 +9730,44 @@ function dropOnModule(from, toId, toGrid, rowEnd) {
   if (!toMod) return;
   const fromSlot = findHead(from.grid, fromMod.id);
   if (fromSlot < 0) return;
+
+  // Same size — a straight exchange always fits.
   if (fromMod.size === toMod.size) {
     removeId(from.grid, fromMod.id); removeId(toGrid, toId);
     placeWithId(toGrid, toSlot, fromMod.name, fromMod.size, fromMod.id);
     placeWithId(from.grid, fromSlot, toMod.name, toMod.size, toMod.id);
-  } else { dropOnSlot(from, toSlot, toGrid, rowEnd); }
+    drag = null; render(); return;
+  }
+
+  // Different sizes. This used to fall through to dropOnSlot(), which always
+  // bailed out on the target cell's occupancy check before doing anything, so
+  // the drop silently did nothing. Instead: lift both modules out, then try to
+  // seat each where the other was. The two checks run in sequence rather than
+  // up front because the ranges can overlap when the modules are adjacent in
+  // the same row. If either placement fails, restore both grids exactly, so a
+  // refused drop leaves the rack untouched.
+  const sameGrid = (toGrid === from.grid);
+  const snapFrom = from.grid.slice();
+  const snapTo   = sameGrid ? null : toGrid.slice();
+
+  removeId(from.grid, fromMod.id);
+  removeId(toGrid, toId);
+
+  const toLimit   = (rowEnd !== undefined) ? rowEnd : rowLimitFor(from.isBay, toSlot);
+  const fromLimit = rowLimitFor(from.isBay, fromSlot);
+
+  let placed = false;
+  if (fitsAt(toGrid, toSlot, fromMod.size, toLimit)) {
+    placeWithId(toGrid, toSlot, fromMod.name, fromMod.size, fromMod.id);
+    if (fitsAt(from.grid, fromSlot, toMod.size, fromLimit)) {
+      placeWithId(from.grid, fromSlot, toMod.name, toMod.size, toMod.id);
+      placed = true;
+    }
+  }
+  if (!placed) {
+    restoreGrid(from.grid, snapFrom);
+    if (!sameGrid) restoreGrid(toGrid, snapTo);
+  }
   drag = null; render();
 }
 function getModAt(grid, idx) {
@@ -9750,6 +9812,38 @@ function renderModPlaceholder(el, cell) {
   const n = Math.min(cell.size * 4, 20);
   for (let d=0; d<n; d++) dots.appendChild(document.createElement('span'));
   el.appendChild(lbl); el.appendChild(dots);
+}
+
+// #place-warn is used for both errors and mid-placement guidance.
+function showPlaceWarn(text, isHint) {
+  const w = document.getElementById('place-warn');
+  if (!w) return;
+  w.textContent = text;
+  w.classList.toggle('hint', !!isHint);
+  w.style.display = 'block';
+}
+function hidePlaceWarn() {
+  const w = document.getElementById('place-warn');
+  if (!w) return;
+  w.style.display = 'none';
+  w.classList.remove('hint');
+}
+
+// A paired module (SP/MP) needs two placements, one in the rack and one in the
+// patchbay. Between them `pending` locks the palette and every delete button,
+// and used to be clearable only by completing the pair or wiping the whole
+// rack — so changing your mind meant Reset or a page reload. Escape now backs
+// out and removes the half already placed.
+function cancelPending() {
+  if (!pending) return;
+  if (pending.bayId != null) removeId(bayGrid, pending.bayId);
+  if (pending.patchId != null) {
+    for (let r = 0; r < PATCH_ROWS; r++) removeId(patchGrid[r], pending.patchId);
+  }
+  pending = null;
+  hidePlaceWarn();
+  buildPalette();
+  render();
 }
 
 function makeModule(cell, wpx, imgSrc, isBay, grid, slotIndex, rowEnd) {
@@ -9855,13 +9949,11 @@ function renderRow(grid, total, containerId, slotClass, isBay, offset=0, rowSize
             const otherFits = isBay
               ? (() => { for (let r=0; r<PATCH_ROWS; r++) { if (canFit(patchGrid[r], PATCH_SLOTS, otherSize)) return true; } return false; })()
               : canFitBay(otherSize);
-            const warn = document.getElementById('place-warn');
             if (!otherFits) {
-              warn.textContent = 'No space for ' + selected + ' in ' + (isBay ? 'patchbay' : 'rack') + '.';
-              warn.style.display = 'block';
+              showPlaceWarn('No space for ' + selected + ' in ' + (isBay ? 'patchbay' : 'rack') + '.', false);
               return;
             }
-            warn.style.display = 'none';
+            hidePlaceWarn();
           }
           place(g, si, selected, size);
           // Get the id just placed (head cell at si)
@@ -9872,6 +9964,8 @@ function renderRow(grid, total, containerId, slotClass, isBay, offset=0, rowSize
             // patch-only or bay-only module — no pending, just place
           } else if (!pending) {
             pending = { name: selected, bayId: isBay ? placedId : null, patchId: !isBay ? placedId : null, bayDone: isBay, patchDone: !isBay };
+            showPlaceWarn('Now place the ' + selected + ' panel in the ' +
+                          (isBay ? 'patchbay' : 'rack') + '.  Esc to cancel.', true);
           } else {
             if (isBay)  { pending.bayId = placedId;   pending.bayDone = true; }
             if (!isBay) { pending.patchId = placedId; pending.patchDone = true; }
@@ -9882,7 +9976,7 @@ function renderRow(grid, total, containerId, slotClass, isBay, offset=0, rowSize
               pairs.set(pending.patchId, pending.bayId);
             }
             pending = null;
-            const w = document.getElementById('place-warn'); if(w) w.style.display='none';
+            hidePlaceWarn();
             // Keep selected for next placement
           }
         } else {
@@ -9890,12 +9984,11 @@ function renderRow(grid, total, containerId, slotClass, isBay, offset=0, rowSize
           const size = isBay ? MODULES[selected].bay : MODULES[selected].patch;
           if (size === 0 || si + size > end) return;
           for (let k=0; k<size; k++) if (g[si+k]) return;
-          const warn = document.getElementById('place-warn');
           if (!canFitBay(size)) {
-            if (warn) { warn.textContent = 'No space for ' + selected + ' in rack.'; warn.style.display = 'block'; }
+            showPlaceWarn('No space for ' + selected + ' in rack.', false);
             return;
           }
-          if (warn) warn.style.display = 'none';
+          hidePlaceWarn();
           place(g, si, selected, size);
           // keep selected for next placement
         }
@@ -10062,22 +10155,21 @@ function buildPalette() {
       btn.textContent = name;
       btn.onclick = () => {
         if (pending) return;
-        const w = document.getElementById('place-warn');
         if (selected === name) {
           selected = null;
-          if(w) w.style.display='none';
+          hidePlaceWarn();
         } else {
           selected = name;
           // Check if fits in rack
           const m = MODULES[name];
           if (m && !v.hasPatch) {
             if (!canFitBay(m.bay)) {
-              if(w) { w.textContent = 'No space for ' + name + ' in rack.'; w.style.display='block'; }
+              showPlaceWarn('No space for ' + name + ' in rack.', false);
             } else {
-              if(w) w.style.display='none';
+              hidePlaceWarn();
             }
           } else {
-            if(w) w.style.display='none';
+            hidePlaceWarn();
           }
         }
         buildPalette();
@@ -10252,8 +10344,7 @@ function loadQuote() {
 function addDeckToQuote() {
   if (!CURRENT_VARIANT) return;
   if (moduleCount(bayGrid) === 0) {
-    const w = document.getElementById('place-warn');
-    if (w) { w.textContent = 'Add at least one module before adding this deck to the quote.'; w.style.display = 'block'; }
+    showPlaceWarn('Add at least one module before adding this deck to the quote.', false);
     return;
   }
   quote.push({
@@ -10511,7 +10602,7 @@ function resetAll() {
   pairs     = new Map();
   patchGrid = Array.from({length: PATCH_ROWS}, () => new Array(PATCH_SLOTS).fill(null));
   selected  = null; pending = null;
-  const w = document.getElementById('place-warn'); if(w) w.style.display='none';
+  hidePlaceWarn();
   try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
   buildPalette(); render(false);
 }
