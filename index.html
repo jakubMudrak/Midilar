@@ -1161,14 +1161,162 @@ html {
   gap: 2px;
 }
 
+/* ══════════════════════════════════════
+   QUOTE — sidebar summary + quote page
+══════════════════════════════════════ */
+.quote-box {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--border2);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.quote-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 10px;
+  letter-spacing: .08em;
+  color: var(--text-dim);
+}
+.quote-row b { color: var(--gold); font-weight: 700; font-size: 12px; letter-spacing: .04em; }
+.add-btn {
+  padding: 8px 0;
+  background: var(--gold-dark);
+  border: 1px solid var(--gold-dim);
+  border-radius: 2px;
+  color: var(--gold);
+  font-size: 9px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  width: 100%;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.add-btn:hover { background: #241f0c; border-color: var(--gold); }
+.add-btn.done  { background: #14240c; border-color: #4a7020; color: #7ab040; }
+
+/* Nav badge */
+.nav-badge {
+  display: inline-block;
+  min-width: 15px;
+  padding: 1px 4px;
+  margin-left: 5px;
+  border-radius: 8px;
+  background: var(--gold);
+  color: #14120a;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Quote page */
+#quote-page { min-height: 100vh; background: var(--bg); padding: 96px 24px 64px; }
+.quote-wrap { max-width: 760px; margin: 0 auto; }
+.quote-title {
+  font-size: 36px; font-weight: 700; color: var(--h-color);
+  letter-spacing: -.01em; margin-bottom: 8px;
+}
+.quote-lede { font-size: 12px; color: var(--text-dim); letter-spacing: .06em; margin-bottom: 36px; line-height: 1.7; }
+.quote-empty {
+  border: 1px dashed var(--border2); border-radius: 2px; padding: 40px 24px;
+  text-align: center; color: var(--text-mute); font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+}
+.deck-card {
+  border: 1px solid var(--border); border-radius: 2px; background: var(--bg3);
+  padding: 16px 18px; margin-bottom: 10px;
+}
+.deck-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+.deck-name { font-size: 13px; font-weight: 700; color: var(--h-color); letter-spacing: .1em; text-transform: uppercase; }
+.deck-sub  { font-size: 9px; color: var(--text-mute); letter-spacing: .14em; text-transform: uppercase; }
+.deck-price { font-size: 14px; font-weight: 700; color: var(--gold); white-space: nowrap; }
+.deck-lines { display: flex; flex-direction: column; gap: 3px; margin-bottom: 10px; }
+.deck-line { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); letter-spacing: .04em; }
+.deck-line span:last-child { color: var(--text); white-space: nowrap; padding-left: 16px; }
+.deck-actions { display: flex; gap: 8px; }
+.link-btn {
+  background: none; border: none; padding: 0; cursor: pointer; font-family: inherit;
+  font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--text-mute);
+  transition: color .15s;
+}
+.link-btn:hover { color: #c04030; }
+.link-btn.dup:hover { color: var(--gold); }
+.quote-total {
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-top: 1px solid var(--border2); margin-top: 18px; padding-top: 14px;
+}
+.quote-total-lbl { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--text-dim); }
+.quote-total-val { font-size: 24px; font-weight: 700; color: var(--gold); }
+.quote-note { font-size: 9px; color: var(--text-mute); letter-spacing: .1em; margin-top: 6px; }
+
+/* Request form */
+.quote-form { margin-top: 44px; border-top: 1px solid var(--border); padding-top: 32px; }
+.quote-form h3 { font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: var(--h-color); font-weight: 700; margin-bottom: 18px; }
+.field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+.field label { font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.field input, .field textarea {
+  background: var(--bg2); border: 1px solid var(--border2); border-radius: 2px;
+  padding: 9px 10px; color: var(--text); font-family: inherit; font-size: 12px; width: 100%;
+}
+.field input:focus, .field textarea:focus { outline: none; border-color: var(--gold-dim); }
+.field textarea { min-height: 84px; resize: vertical; }
+.hp { position: absolute; left: -9999px; opacity: 0; }
+.send-btn {
+  padding: 11px 26px; background: var(--gold); border: 1px solid var(--gold);
+  border-radius: 2px; color: #14120a; font-size: 10px; letter-spacing: .2em;
+  text-transform: uppercase; font-weight: 700; cursor: pointer; font-family: inherit;
+  transition: opacity .15s;
+}
+.send-btn:hover:not(:disabled) { opacity: .85; }
+.send-btn:disabled { opacity: .4; cursor: not-allowed; }
+.form-alt { font-size: 10px; color: var(--text-dim); letter-spacing: .06em; margin-top: 14px; line-height: 1.7; }
+.form-alt a { color: var(--gold); }
+.form-msg { font-size: 11px; letter-spacing: .06em; margin-top: 14px; line-height: 1.6; display: none; }
+.form-msg.err { color: #c04030; display: block; }
+.form-msg.ok  { color: #7ab040; display: block; }
+.form-msg.info{ color: var(--text-dim); display: block; }
+
+@media (max-width: 740px) {
+  #quote-page { padding: 76px 16px 48px; }
+  .quote-title { font-size: 28px; }
+}
+
 /* ══ MOBILE RESPONSIVE — musí byť na konci aby prepísalo desktop štýly ══ */
 @media (max-width: 768px) {
+  /* Nav on small screens: keep the links reachable.
+     They used to be display:none here with no hamburger and no other route
+     into the site, which left the configurator, guide and FAQ unreachable on
+     mobile even though .sys-cards below is styled for it. Kept inside the
+     existing 48px bar (several layouts offset by that) and allowed to scroll
+     horizontally rather than wrap, so no offset has to change. */
   .top-nav {
-    grid-template-columns: 1fr !important;
-    padding: 0 20px !important;
+    grid-template-columns: auto minmax(0, 1fr) !important;
+    padding: 0 14px !important;
+    gap: 10px;
     justify-items: start;
   }
-  .top-nav-center { display: none !important; }
+  .top-nav-logo { width: 54px; }
+  .top-nav-mkii { display: none; }
+  .top-nav-center {
+    display: flex !important;
+    justify-content: flex-end;
+    gap: 13px;
+    width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    mask-image: linear-gradient(to right, transparent 0, #000 12px);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 12px);
+  }
+  .top-nav-center::-webkit-scrollbar { display: none; }
+  .top-nav-center a { font-size: 8px; letter-spacing: .1em; }
   .top-nav-right { display: none !important; }
   #hero {
     padding-left: 20px !important;
@@ -1242,6 +1390,7 @@ html {
     <a href="#" id="nav-patchbay"     onclick="showView('patchbay','nav-patchbay'); return false;" style="display:none;">System configurator + Patchbay</a>
     <a href="cable_editor.html" id="nav-patchbay-editor" target="_blank" style="display:none;">Patchbay Editor</a>
     <a href="#" id="nav-faq"          onclick="showView('faq','nav-faq'); return false;">FAQ</a>
+    <a href="#" id="nav-quote"        onclick="showView('quote','nav-quote'); return false;">Quote<span class="nav-badge" id="quote-badge" style="display:none;">0</span></a>
   </div>
   <div class="top-nav-right">
   </div>
@@ -9251,6 +9400,13 @@ html {
     <div class="pal-filters" id="pal-filters"></div>
     <div id="palette"></div>
     <div id="place-warn" style="display:none;margin-top:10px;font-size:9px;color:#c04030;letter-spacing:.08em;line-height:1.5;padding:6px 8px;border:1px solid #4a1010;border-radius:2px;background:#120808;"></div>
+
+    <div class="quote-box">
+      <div class="quote-row" id="deck-subtotal-row" style="display:none;">
+        <span>This deck</span><b id="deck-subtotal">—</b>
+      </div>
+      <button class="add-btn" id="add-deck-btn" onclick="addDeckToQuote()">+ &nbsp;Add to quote</button>
+    </div>
   </aside>
   <main class="main" id="main-area">
     <!-- rack injected here -->
@@ -9260,6 +9416,10 @@ html {
 <script>
 // Init landing on load
 window.addEventListener('DOMContentLoaded', function() {
+  loadQuote();
+  updateQuoteBadge();
+  renderQuoteAltLink();
+  loadPrices();          // async; the configurator never waits on it
   const hash = location.hash.replace('#', '');
   if (HASH_MAP[hash]) {
     showView(HASH_MAP[hash].view, HASH_MAP[hash].navId, true);
@@ -9406,6 +9566,7 @@ function launch(variantKey) {
   buildFilters();
   buildPalette();
   render(false);
+  updateDeckSubtotal();
   const pw = document.getElementById('place-warn'); if(pw) pw.style.display='none';
 
   document.getElementById('landing').style.display = 'none';
@@ -9809,6 +9970,7 @@ function render(save=true) {
     renderRow(bayGrid, BAY_SLOTS, 'bay-row', 'bay-slot', true);
   }
   if (save) saveState();
+  updateDeckSubtotal();
 }
 
 function buildFilters() {
@@ -9935,6 +10097,7 @@ function showView(view, navId, fromHash) {
   document.getElementById('landing-page').style.display  = 'none';
   document.getElementById('landing').style.display       = 'none';
   document.getElementById('faq-page').style.display      = 'none';
+  document.getElementById('quote-page').style.display    = 'none';
   document.getElementById('app').classList.remove('active');
 
   if (view === 'landing-page') {
@@ -9948,6 +10111,10 @@ function showView(view, navId, fromHash) {
     showLanding('patchbay');
   } else if (view === 'faq') {
     document.getElementById('faq-page').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  } else if (view === 'quote') {
+    document.getElementById('quote-page').style.display = 'block';
+    renderQuote();
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
   // app view is handled by launch()
@@ -9972,6 +10139,7 @@ const HASH_MAP = {
   'system':       { view: 'system',       navId: 'nav-system'      },
   'patchbay':     { view: 'patchbay',     navId: 'nav-patchbay'    },
   'faq':          { view: 'faq',          navId: 'nav-faq'         },
+  'quote':        { view: 'quote',        navId: 'nav-quote'       },
 };
 
 // Browser ← / → — react to hash change
@@ -10010,6 +10178,333 @@ function showLanding(tab) {
   document.getElementById('landing-patchbay').style.display = tab === 'patchbay' ? 'flex' : 'none';
 }
 
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  PRICING & QUOTES                                                 ║
+// ║  Prices live in prices.json — edit that file, not this one.       ║
+// ╚══════════════════════════════════════════════════════════════════╝
+
+// Web3Forms access key. Get one free at https://web3forms.com (enter your
+// email, they send you a key). It is safe to commit — the key is public by
+// design and only lets a form post to the address it was issued for.
+// While it is empty the form falls back to opening the visitor's mail client.
+const FORM_ACCESS_KEY = '';
+const ADMIN_EMAIL     = 'midilar.controller@gmail.com';
+
+const QUOTE_KEY = 'midilar_quote_v1';
+let PRICES = null;      // null until prices.json loads; pricing stays off
+let quote  = [];
+
+// ── Prices ──
+// Pricing is an enhancement, never a dependency: if the fetch fails (offline,
+// opened over file://, file missing) or "enabled" is false, the configurator
+// must still work exactly as before, just without any figures.
+function pricingOn() { return !!(PRICES && PRICES.enabled); }
+
+function loadPrices() {
+  return fetch('prices.json', { cache: 'no-cache' })
+    .then(r => r.ok ? r.json() : null)
+    .then(p => { PRICES = p; })
+    .catch(() => { PRICES = null; })
+    .then(() => { updateDeckSubtotal(); renderQuote(); });
+}
+
+function money(n) {
+  const sym = (PRICES && PRICES.symbol) || '';
+  return sym + ' ' + Math.round(n).toLocaleString('en-US').replace(/,/g, ' ');
+}
+
+// ── Price of one deck ──
+// Counts head cells only: a 3-slot module fills three cells but is one item.
+function deckPrice(variant, grid) {
+  if (!pricingOn()) return null;
+  const base = PRICES.bases ? PRICES.bases[variant] : undefined;
+  if (base === undefined) return null;          // e.g. SP/MP — not priced yet
+  const counts = {};
+  (grid || []).forEach(c => { if (c && c.head) counts[c.name] = (counts[c.name] || 0) + 1; });
+  const lines = Object.keys(counts).sort().map(name => {
+    const unit = (PRICES.modules && PRICES.modules[name]) || 0;
+    return { name, qty: counts[name], unit, total: counts[name] * unit };
+  });
+  return { base, lines, total: base + lines.reduce((s, l) => s + l.total, 0) };
+}
+
+function moduleCount(grid) {
+  return (grid || []).reduce((n, c) => n + (c && c.head ? 1 : 0), 0);
+}
+
+// ── Quote persistence ──
+function saveQuote() {
+  try { localStorage.setItem(QUOTE_KEY, JSON.stringify(quote)); } catch(e) {}
+}
+function loadQuote() {
+  try {
+    const raw = localStorage.getItem(QUOTE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      // Drop anything referring to a variant or module this build no longer has.
+      quote = parsed.filter(d => d && VARIANTS[d.variant] && Array.isArray(d.bayGrid));
+    }
+  } catch(e) {}
+}
+
+// ── Add / remove ──
+function addDeckToQuote() {
+  if (!CURRENT_VARIANT) return;
+  if (moduleCount(bayGrid) === 0) {
+    const w = document.getElementById('place-warn');
+    if (w) { w.textContent = 'Add at least one module before adding this deck to the quote.'; w.style.display = 'block'; }
+    return;
+  }
+  quote.push({
+    id: Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+    variant: CURRENT_VARIANT,
+    bayGrid: JSON.parse(JSON.stringify(bayGrid))
+  });
+  saveQuote();
+  updateQuoteBadge();
+  const btn = document.getElementById('add-deck-btn');
+  if (btn) {
+    btn.textContent = '✓  Added to quote';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = '+  Add to quote'; btn.classList.remove('done'); }, 1600);
+  }
+}
+
+function removeFromQuote(id) {
+  quote = quote.filter(d => d.id !== id);
+  saveQuote(); updateQuoteBadge(); renderQuote();
+}
+
+function duplicateInQuote(id) {
+  const d = quote.find(x => x.id === id);
+  if (!d) return;
+  quote.push(Object.assign({}, d, { id: Date.now() + '-' + Math.random().toString(36).slice(2, 7) }));
+  saveQuote(); updateQuoteBadge(); renderQuote();
+}
+
+function updateQuoteBadge() {
+  const b = document.getElementById('quote-badge');
+  if (!b) return;
+  b.textContent = quote.length;
+  b.style.display = quote.length ? 'inline-block' : 'none';
+}
+
+function updateDeckSubtotal() {
+  const row = document.getElementById('deck-subtotal-row');
+  const val = document.getElementById('deck-subtotal');
+  if (!row || !val) return;
+  const p = CURRENT_VARIANT ? deckPrice(CURRENT_VARIANT, bayGrid) : null;
+  if (!p) { row.style.display = 'none'; return; }
+  row.style.display = 'flex';
+  val.textContent = money(p.total);
+}
+
+// ── Quote page ──
+function renderQuote() {
+  const wrap = document.getElementById('quote-decks');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  updateQuoteBadge();
+
+  const totalRow = document.getElementById('quote-total-row');
+  const noteEl   = document.getElementById('quote-note');
+  const form     = document.getElementById('quote-form');
+
+  if (!quote.length) {
+    const empty = document.createElement('div');
+    empty.className = 'quote-empty';
+    empty.textContent = 'No systems added yet';
+    wrap.appendChild(empty);
+    if (totalRow) totalRow.style.display = 'none';
+    if (noteEl)   noteEl.style.display = 'none';
+    if (form)     form.style.display = 'none';
+    return;
+  }
+  if (form) form.style.display = 'block';
+
+  let grand = 0, priced = true;
+
+  quote.forEach((deck, i) => {
+    const v = VARIANTS[deck.variant];
+    const p = deckPrice(deck.variant, deck.bayGrid);
+    if (p) grand += p.total; else priced = false;
+
+    const card = document.createElement('div');
+    card.className = 'deck-card';
+
+    const head = document.createElement('div');
+    head.className = 'deck-head';
+    const left = document.createElement('div');
+    const name = document.createElement('div');
+    name.className = 'deck-name';
+    name.textContent = 'Deck ' + (i + 1) + ' — Size ' + (v ? v.label : deck.variant);
+    const sub = document.createElement('div');
+    sub.className = 'deck-sub';
+    sub.textContent = moduleCount(deck.bayGrid) + ' modules · ' + (v ? v.bay * 4 : '?') + ' controls';
+    left.appendChild(name); left.appendChild(sub);
+    head.appendChild(left);
+    if (p) {
+      const price = document.createElement('div');
+      price.className = 'deck-price';
+      price.textContent = money(p.total);
+      head.appendChild(price);
+    }
+    card.appendChild(head);
+
+    // Line items
+    const lines = document.createElement('div');
+    lines.className = 'deck-lines';
+    const counts = {};
+    (deck.bayGrid || []).forEach(c => { if (c && c.head) counts[c.name] = (counts[c.name] || 0) + 1; });
+    if (p) {
+      const baseLine = document.createElement('div');
+      baseLine.className = 'deck-line';
+      baseLine.innerHTML = '<span>Base chassis ' + (v ? v.label : deck.variant) + '</span>';
+      const bv = document.createElement('span'); bv.textContent = money(p.base);
+      baseLine.appendChild(bv);
+      lines.appendChild(baseLine);
+      p.lines.forEach(l => {
+        const row = document.createElement('div');
+        row.className = 'deck-line';
+        const a = document.createElement('span'); a.textContent = l.qty + '× ' + l.name;
+        const b = document.createElement('span'); b.textContent = money(l.total);
+        row.appendChild(a); row.appendChild(b);
+        lines.appendChild(row);
+      });
+    } else {
+      Object.keys(counts).sort().forEach(n => {
+        const row = document.createElement('div');
+        row.className = 'deck-line';
+        const a = document.createElement('span'); a.textContent = counts[n] + '× ' + n;
+        row.appendChild(a);
+        lines.appendChild(row);
+      });
+    }
+    card.appendChild(lines);
+
+    const actions = document.createElement('div');
+    actions.className = 'deck-actions';
+    const dup = document.createElement('button');
+    dup.type = 'button'; dup.className = 'link-btn dup'; dup.textContent = 'Duplicate';
+    dup.onclick = () => duplicateInQuote(deck.id);
+    const rm = document.createElement('button');
+    rm.type = 'button'; rm.className = 'link-btn'; rm.textContent = 'Remove';
+    rm.onclick = () => removeFromQuote(deck.id);
+    actions.appendChild(dup); actions.appendChild(rm);
+    card.appendChild(actions);
+
+    wrap.appendChild(card);
+  });
+
+  if (totalRow) {
+    const show = pricingOn() && priced;
+    totalRow.style.display = show ? 'flex' : 'none';
+    if (show) document.getElementById('quote-total-val').textContent = money(grand);
+  }
+  if (noteEl) {
+    const note = pricingOn() && PRICES.note ? PRICES.note : '';
+    noteEl.textContent = note;
+    noteEl.style.display = note ? 'block' : 'none';
+  }
+}
+
+// ── The text that actually gets sent ──
+function quoteSummary() {
+  const lines = ['MIDILAR — CONFIGURATION REQUEST', ''];
+  let grand = 0, priced = pricingOn();
+  quote.forEach((deck, i) => {
+    const v = VARIANTS[deck.variant];
+    const p = deckPrice(deck.variant, deck.bayGrid);
+    lines.push('Deck ' + (i + 1) + ' — Size ' + (v ? v.label : deck.variant) + (p ? '   ' + money(p.total) : ''));
+    const counts = {};
+    (deck.bayGrid || []).forEach(c => { if (c && c.head) counts[c.name] = (counts[c.name] || 0) + 1; });
+    if (p) lines.push('  Base chassis ' + (v ? v.label : deck.variant) + '   ' + money(p.base));
+    Object.keys(counts).sort().forEach(n => {
+      const unit = p && PRICES.modules ? PRICES.modules[n] || 0 : null;
+      lines.push('  ' + counts[n] + 'x ' + n + (unit !== null ? '   ' + money(counts[n] * unit) : ''));
+    });
+    if (p) grand += p.total; else priced = false;
+    lines.push('');
+  });
+  if (priced && quote.length) lines.push('TOTAL: ' + money(grand));
+  if (priced && PRICES.note) lines.push('(' + PRICES.note + ')');
+  if (!priced) lines.push('(Prices to be confirmed.)');
+  return lines.join('\n');
+}
+
+function mailtoHref() {
+  const subject = 'Midilar configuration request (' + quote.length + ' deck' + (quote.length === 1 ? '' : 's') + ')';
+  return 'mailto:' + ADMIN_EMAIL +
+         '?subject=' + encodeURIComponent(subject) +
+         '&body=' + encodeURIComponent(quoteSummary().slice(0, 1500));
+}
+
+function renderQuoteAltLink() {
+  const alt = document.getElementById('q-alt');
+  if (!alt) return;
+  alt.innerHTML = 'Prefer your own mail client? ' +
+    '<a id="q-mailto" href="#">Open this quote in email</a>.';
+  const a = document.getElementById('q-mailto');
+  if (a) a.addEventListener('click', function(ev) {
+    ev.preventDefault();
+    if (!quote.length) return;
+    window.location.href = mailtoHref();
+  });
+}
+
+function submitQuote(e) {
+  e.preventDefault();
+  const out  = document.getElementById('q-msg-out');
+  const send = document.getElementById('q-send');
+  const name  = document.getElementById('q-name').value.trim();
+  const email = document.getElementById('q-email').value.trim();
+  const msg   = document.getElementById('q-msg').value.trim();
+  if (document.getElementById('q-botcheck').checked) return false;   // honeypot
+  if (!quote.length) return false;
+
+  const body = quoteSummary() + (msg ? '\n\nMessage:\n' + msg : '');
+
+  if (!FORM_ACCESS_KEY) {
+    out.className = 'form-msg info';
+    out.textContent = 'Email sending is not configured yet — opening your mail client instead.';
+    window.location.href = mailtoHref();
+    return false;
+  }
+
+  send.disabled = true;
+  out.className = 'form-msg info';
+  out.textContent = 'Sending…';
+
+  fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({
+      access_key: FORM_ACCESS_KEY,
+      subject: 'Midilar configuration request — ' + quote.length + ' deck' + (quote.length === 1 ? '' : 's'),
+      from_name: 'Midilar configurator',
+      name: name, email: email, message: body
+    })
+  })
+    .then(r => r.json())
+    .then(d => {
+      if (d && d.success) {
+        out.className = 'form-msg ok';
+        out.textContent = 'Sent. You will get a reply at ' + email + '.';
+        document.getElementById('quote-form').reset();
+      } else {
+        throw new Error((d && d.message) || 'Unknown error');
+      }
+    })
+    .catch(() => {
+      out.className = 'form-msg err';
+      out.innerHTML = 'Could not send just now. Use the mail link below instead.';
+    })
+    .then(() => { send.disabled = false; });
+
+  return false;
+}
+
 function resetAll() {
   if (!confirm('Clear everything?')) return;
   bayGrid   = new Array(BAY_SLOTS).fill(null);
@@ -10023,6 +10518,45 @@ function resetAll() {
 </script>
 
 
+
+<!-- ══ QUOTE PAGE ══ -->
+<div id="quote-page" style="display:none;">
+  <div class="quote-wrap">
+    <div class="quote-title">Your quote</div>
+    <div class="quote-lede" id="quote-lede">
+      Add one or more configured systems, then send the list over and you will get a reply with
+      availability and a final price.
+    </div>
+
+    <div id="quote-decks"></div>
+
+    <div class="quote-total" id="quote-total-row" style="display:none;">
+      <span class="quote-total-lbl">Total</span>
+      <span class="quote-total-val" id="quote-total-val">—</span>
+    </div>
+    <div class="quote-note" id="quote-note" style="display:none;"></div>
+
+    <form class="quote-form" id="quote-form" onsubmit="return submitQuote(event);">
+      <h3>Request this configuration</h3>
+      <div class="field">
+        <label for="q-name">Name</label>
+        <input type="text" id="q-name" name="name" autocomplete="name" required>
+      </div>
+      <div class="field">
+        <label for="q-email">Email</label>
+        <input type="email" id="q-email" name="email" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label for="q-msg">Message <span style="text-transform:none;letter-spacing:0;">(optional)</span></label>
+        <textarea id="q-msg" name="message" placeholder="Anything you want to add"></textarea>
+      </div>
+      <input type="checkbox" class="hp" id="q-botcheck" name="botcheck" tabindex="-1" autocomplete="off">
+      <button type="submit" class="send-btn" id="q-send">Send request</button>
+      <div class="form-msg" id="q-msg-out"></div>
+      <div class="form-alt" id="q-alt"></div>
+    </form>
+  </div>
+</div>
 
 <!-- ══ FAQ PAGE ══ -->
 <div id="faq-page" style="display:none;">
