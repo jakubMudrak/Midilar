@@ -9757,13 +9757,35 @@ function dropOnModule(from, toId, toGrid, rowEnd) {
   const fromLimit = rowLimitFor(from.isBay, fromSlot);
 
   let placed = false;
-  if (fitsAt(toGrid, toSlot, fromMod.size, toLimit)) {
+
+  // Touching modules get exchanged within their combined span. This is tried
+  // first, not as a fallback: the generic path below moves the target module to
+  // the dragged module's old head cell, which for differing sizes leaves a gap
+  // and gives a different result depending on which of the two was dragged.
+  // Exchanging in place is gap-free and direction-independent, and the span is
+  // exactly the right size by definition.
+  const lo = Math.min(fromSlot, toSlot);
+  const hi = Math.max(fromSlot + fromMod.size, toSlot + toMod.size);
+  if (sameGrid && (hi - lo) === (fromMod.size + toMod.size) &&
+      fitsAt(from.grid, lo, hi - lo, rowLimitFor(from.isBay, lo))) {
+    const firstWas  = (fromSlot < toSlot) ? fromMod : toMod;
+    const secondWas = (fromSlot < toSlot) ? toMod   : fromMod;
+    placeWithId(from.grid, lo, secondWas.name, secondWas.size, secondWas.id);
+    placeWithId(from.grid, lo + secondWas.size, firstWas.name, firstWas.size, firstWas.id);
+    placed = true;
+  }
+
+  // Otherwise seat each module where the other's head was. The checks run in
+  // sequence rather than up front because the first placement changes what is
+  // free for the second.
+  if (!placed && fitsAt(toGrid, toSlot, fromMod.size, toLimit)) {
     placeWithId(toGrid, toSlot, fromMod.name, fromMod.size, fromMod.id);
     if (fitsAt(from.grid, fromSlot, toMod.size, fromLimit)) {
       placeWithId(from.grid, fromSlot, toMod.name, toMod.size, toMod.id);
       placed = true;
     }
   }
+
   if (!placed) {
     restoreGrid(from.grid, snapFrom);
     if (!sameGrid) restoreGrid(toGrid, snapTo);
@@ -10333,10 +10355,25 @@ function loadQuote() {
     const raw = localStorage.getItem(QUOTE_KEY);
     if (!raw) return;
     const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) {
-      // Drop anything referring to a variant or module this build no longer has.
-      quote = parsed.filter(d => d && VARIANTS[d.variant] && Array.isArray(d.bayGrid));
-    }
+    if (!Array.isArray(parsed)) return;
+    // Saved quotes key modules by display name, so a module that is renamed or
+    // removed in a later build would otherwise survive here as a line item
+    // silently priced at zero. Sanitise the same way loadState() does for the
+    // working rack, normalise the grid to the variant's current size, and drop
+    // any deck left with nothing in it.
+    quote = parsed
+      .filter(d => d && VARIANTS[d.variant] && Array.isArray(d.bayGrid))
+      .map(d => {
+        const slots = VARIANTS[d.variant].bay;
+        const grid = new Array(slots).fill(null);
+        for (let i = 0; i < slots; i++) {
+          const c = d.bayGrid[i];
+          grid[i] = (c && MODULES[c.name]) ? c : null;
+        }
+        return { id: d.id || (Date.now() + '-' + Math.random().toString(36).slice(2, 7)),
+                 variant: d.variant, bayGrid: grid };
+      })
+      .filter(d => d.bayGrid.some(Boolean));
   } catch(e) {}
 }
 
@@ -10451,9 +10488,10 @@ function renderQuote() {
     if (p) {
       const baseLine = document.createElement('div');
       baseLine.className = 'deck-line';
-      baseLine.innerHTML = '<span>Base chassis ' + (v ? v.label : deck.variant) + '</span>';
+      const bl = document.createElement('span');
+      bl.textContent = 'Base chassis ' + (v ? v.label : deck.variant);
       const bv = document.createElement('span'); bv.textContent = money(p.base);
-      baseLine.appendChild(bv);
+      baseLine.appendChild(bl); baseLine.appendChild(bv);
       lines.appendChild(baseLine);
       p.lines.forEach(l => {
         const row = document.createElement('div');
@@ -10589,7 +10627,7 @@ function submitQuote(e) {
     })
     .catch(() => {
       out.className = 'form-msg err';
-      out.innerHTML = 'Could not send just now. Use the mail link below instead.';
+      out.textContent = 'Could not send just now. Use the mail link below instead.';
     })
     .then(() => { send.disabled = false; });
 
