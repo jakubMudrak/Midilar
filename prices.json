@@ -9,7 +9,7 @@
     "Keys in 'modules' must match the module names used by the configurator exactly."
   ],
   "_status": "PLACEHOLDER PRICES - replace before setting enabled to true",
-  "enabled": false,
+  "enabled": true,
   "currency": "EUR",
   "symbol": "€",
   "note": "Prices exclude VAT and shipping.",
